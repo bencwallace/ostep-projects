@@ -6,11 +6,11 @@
 
 #include "tokenizer.h"
 
-int tokenize(size_t len, char *line, Token **toks) {
+int tokenize(size_t len, char *line, Token *toks) {
     int count = 0;
     line += strspn(line, " \n");
     while (strcmp(line, "")) {
-        toks[count] = malloc(sizeof(Token));
+        // toks[count] = malloc(sizeof(Token));
 
         size_t tok_size;
         int tok_type;
@@ -32,9 +32,9 @@ int tokenize(size_t len, char *line, Token **toks) {
                 tok_type = ident_tok;
             }
         }
-        toks[count]->len = tok_size;
-        toks[count]->val = line;
-        toks[count]->tok_type = tok_type;
+        toks[count].len = tok_size;
+        toks[count].val = line;
+        toks[count].tok_type = tok_type;
 
         line += tok_size;
         line += strspn(line, " \n");

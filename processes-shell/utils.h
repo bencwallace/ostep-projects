@@ -15,4 +15,6 @@ void error();
 
 char *tok_to_str(Token *tok);
 
+void free_token(Token *tok);
+
 #endif

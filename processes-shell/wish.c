@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     size_t len, _dummy;
     char *line = malloc(MAX_LINE_LEN);
     ParallelNode *node;
-    Token **toks = malloc(MAX_LINE_LEN * sizeof(Token *));
+    Token toks[MAX_LINE_LEN];
     len = 0;
     if (interactive) printf("wish> ");
     while ((len = getline(&line, &_dummy, fin)) != -1) {

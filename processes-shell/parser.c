@@ -5,35 +5,35 @@
 #include "parser.h"
 #include "utils.h"
 
-bool parse_empty(size_t len, Token **toks) {
-    return len == 0 || toks[0]->tok_type == ampand_tok;
+bool parse_empty(size_t len, Token *toks) {
+    return len == 0 || toks[0].tok_type == ampand_tok;
 }
 
-bool parse_exit(size_t len, Token **toks) {
-    return len == 1 && toks[0]->tok_type == exit_tok;
+bool parse_exit(size_t len, Token *toks) {
+    return len == 1 && toks[0].tok_type == exit_tok;
 }
 
-CdNode *parse_cd(size_t len, Token **toks) {
+CdNode *parse_cd(size_t len, Token *toks) {
     CdNode *cd_node = NULL;
 
-    if (len >= 2 && toks[0]->tok_type == cd_tok) {
+    if (len >= 2 && toks[0].tok_type == cd_tok) {
         cd_node = malloc(sizeof(CdNode));
-        cd_node->path = toks[1];
+        cd_node->path = &toks[1];
     }
 
     return cd_node;
 }
 
-PathNode *parse_path(size_t len, Token **toks) {
+PathNode *parse_path(size_t len, Token *toks) {
     PathNode *path_node = NULL;
 
-    if (len >= 1 && toks[0]->tok_type == path_tok) {
+    if (len >= 1 && toks[0].tok_type == path_tok) {
         path_node = malloc(sizeof(PathNode));
         path_node->n_paths = 0;
         path_node->paths = malloc((len - 1) * sizeof(char *));
 
-        while (1 + path_node->n_paths < len && toks[path_node->n_paths + 1]->tok_type == ident_tok) {
-            (path_node->paths)[path_node->n_paths] = toks[path_node->n_paths + 1];
+        while (1 + path_node->n_paths < len && toks[path_node->n_paths + 1].tok_type == ident_tok) {
+            (path_node->paths)[path_node->n_paths] = &toks[path_node->n_paths + 1];
             ++(path_node->n_paths);
         }
     }
@@ -41,34 +41,34 @@ PathNode *parse_path(size_t len, Token **toks) {
     return path_node;
 }
 
-ExecNode *parse_exec(size_t len, Token **toks) {
+ExecNode *parse_exec(size_t len, Token *toks) {
     ExecNode *exec_node = NULL;
 
     if (len >= 1 &&
-        toks[0]->tok_type == ident_tok &&
-        toks[0]->len > 0
+        toks[0].tok_type == ident_tok &&
+        toks[0].len > 0
     ) {
         // initialize command
         exec_node = malloc(sizeof(ExecNode));
-        exec_node->len_cmd = toks[0]->len;
-        exec_node->cmd = toks[0];
+        exec_node->len_cmd = toks[0].len;
+        exec_node->cmd = &toks[0];
         exec_node->n_args = 0;
         exec_node->args = malloc((len - 1) * sizeof(Token *));
 
         // parse arguments
-        while (1 + exec_node->n_args < len && toks[exec_node->n_args + 1]->tok_type == ident_tok) {
-            (exec_node->args)[exec_node->n_args] = toks[exec_node->n_args + 1];
+        while (1 + exec_node->n_args < len && toks[exec_node->n_args + 1].tok_type == ident_tok) {
+            (exec_node->args)[exec_node->n_args] = &toks[exec_node->n_args + 1];
             ++(exec_node->n_args);
         }
 
         // parse output redirection
         if (exec_node->n_args < len - 1 &&
-            toks[exec_node->n_args + 1]->tok_type == rangle_tok
+            toks[exec_node->n_args + 1].tok_type == rangle_tok
         ) {
             if (exec_node->n_args < len - 2 &&
-                toks[exec_node->n_args + 2]->tok_type == ident_tok
+                toks[exec_node->n_args + 2].tok_type == ident_tok
             ) {
-                exec_node->out = toks[exec_node->n_args + 2];
+                exec_node->out = &toks[exec_node->n_args + 2];
             } else {
                 return NULL;
             }
@@ -78,7 +78,7 @@ ExecNode *parse_exec(size_t len, Token **toks) {
     return exec_node;
 }
 
-CommandNode *parse_command(size_t len, Token **toks) {
+CommandNode *parse_command(size_t len, Token *toks) {
     CommandNode *node = malloc(sizeof(CommandNode));
     if (!node) error();
 
@@ -107,7 +107,7 @@ CommandNode *parse_command(size_t len, Token **toks) {
     return node;
 }
 
-ParallelNode *parse_parallel(size_t len, Token** toks) {
+ParallelNode *parse_parallel(size_t len, Token* toks) {
     ParallelNode *parallel_node = NULL;
 
     Token *path;
@@ -138,7 +138,7 @@ ParallelNode *parse_parallel(size_t len, Token** toks) {
         len -= n_toks;
     }
     if (len > 0) {
-        if (toks[0]->tok_type != ampand_tok) {
+        if (toks[0].tok_type != ampand_tok) {
             return NULL;
         }
         ++toks;

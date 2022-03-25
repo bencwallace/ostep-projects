@@ -27,3 +27,8 @@ char *tok_to_str(Token *tok) {
     str[tok->len] = '\0';
     return str;
 }
+
+void free_token(Token *tok) {
+    if (tok->val) free(tok->val);
+    free(tok);
+}
