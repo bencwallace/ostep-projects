@@ -11,8 +11,8 @@ void exec_path(PathNode *, PathNode *);
 
 void exec_exec(ExecNode *, PathNode *);
 
-void exec_command(CommandNode *, PathNode *);
+int exec_command(CommandNode *, PathNode *);
 
-void exec_parallel(ParallelNode *, PathNode *);
+int exec_parallel(ParallelNode *, PathNode *);
 
 #endif

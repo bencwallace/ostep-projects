@@ -102,17 +102,17 @@ void exec_exec(ExecNode *exec_node, PathNode *path) {
     warn();
 }
 
-void exec_command(CommandNode *cmd_node, PathNode *path) {
+int exec_command(CommandNode *cmd_node, PathNode *path) {
     if (!cmd_node) {
         warn();
-        return;
+        return 0;
     }
 
     switch (cmd_node->node_type) {
         case empty_t:
             break;
         case exit_t:
-            exit(0);
+            return 1;
         case cd_t:
             if (!exec_cd(cmd_node->cd_node->path)) {
                 warn();
@@ -127,10 +127,13 @@ void exec_command(CommandNode *cmd_node, PathNode *path) {
         default:
             error();
     }
+
+    return 0;
 }
 
 
-void exec_parallel(ParallelNode *parallel_node, PathNode *path) {
+int exec_parallel(ParallelNode *parallel_node, PathNode *path) {
+    int ret = 0;
     if (parallel_node->right) {
         pid_t pid = fork();
         if (!pid) {  // child
@@ -144,6 +147,7 @@ void exec_parallel(ParallelNode *parallel_node, PathNode *path) {
             // if (!WIFEXITED(wstatus)) exit(WEXITSTATUS(wstatus));
         }
     } else {
-        exec_command(parallel_node->left, path);
+        ret = exec_command(parallel_node->left, path);
     }
+    return ret;
 }

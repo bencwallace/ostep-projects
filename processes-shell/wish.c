@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
     // start REPL
     size_t len, _dummy;
-    char *line = malloc(MAX_LINE_LEN);
+    char *line = NULL;
     ParallelNode *node;
     Token toks[MAX_LINE_LEN];
     len = 0;
@@ -47,9 +47,15 @@ int main(int argc, char **argv) {
     while ((len = getline(&line, &_dummy, fin)) != -1) {
         int n_toks = tokenize(len, line, toks);
         if ((node = parse_parallel(n_toks, toks))) {
-            exec_parallel(node, &path);
+            if (exec_parallel(node, &path)) {
+                break;
+            }
         }
         else warn();
         if (interactive) printf("wish> ");
     }
+
+    free(bin);
+    free(line);
+    free(node);
 }
